@@ -1,0 +1,10 @@
+﻿<!------------------------------------------------
+
+This is a pure copy of the ExifLibrary GIT project by Ozgur Ozcitak
+all code is by Ozgur and git contributors
+https://github.com/oozcitak/exiflibrary      1.Dec.2020
+
+Resaved as a C# ClassLibrary for .Net Framework 4.7.2 , not .Net Standard 
+to remove the need for 200Mb of 'future' libraries 
+
+------------------------------>
