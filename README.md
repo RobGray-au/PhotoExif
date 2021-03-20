@@ -2,7 +2,7 @@
 a couple of Windows desktop apps to help map out a folder of GPS's tagged photos into a KMZ file<br />
 inspired by PhotoKML (http://www.visualtravelguide.com/) but it didnt do exactly what I wanted so wrote my own version.<br />
 <br />
-that didnt work out so well as I discovered the camera time had not been updated to match the local time....GPS2Date is the result. <br />
+that didnt work out so well as I discovered the camera time had not been updated to match the local time....FixExifTimeStamp is the result. <br />
 <br />
 It runs through the folder list comparing Exif datetaken with the GPS date, adjusted for local time based upon the Lat/Long <br />
 Unlike other exif updaters i found, this one allows for different corrections for different cameras.<br />
