@@ -130,6 +130,22 @@ namespace ImagerLib
                 }
                 
             }
+
+            #region save the EXIF props etc
+            try
+            {
+                foreach (var id in initialimage.PropertyIdList)
+                {
+                    try
+                    {
+                        bitmap_output.SetPropertyItem(initialimage.GetPropertyItem(id));
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            #endregion
+
             initialimage.Dispose();
             if (rotationDegree.HasValue && rotationDegree.Value != RotateFlipType.RotateNoneFlipNone)
             {

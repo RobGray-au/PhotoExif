@@ -103,12 +103,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EXIFLib_472\EXIFLib_472.csproj">
-      <Project>{1ef34d8a-44d9-44b2-bb7e-706b686a261e}</Project>
-      <Name>EXIFLib_472</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\Open_65291.png" />
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +113,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\kmzItaly.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\ClassLib\EXIFLib_472\EXIFLib_472.csproj">
+      <Project>{1ef34d8a-44d9-44b2-bb7e-706b686a261e}</Project>
+      <Name>EXIFLib_472</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

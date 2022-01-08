@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 using ExifLibrary;
 
 
@@ -9,14 +11,22 @@ namespace FixExifTimeStamp
     class FixExif_methods
     {   
         private static TimeSpan lastCameraOffset = new TimeSpan(0, 0, 0);
+        public static bool OverwriteFile = false;
         public static string outPutFolderName = "";
         public static bool RenameFile_asDate = false;
 
         public static bool OffsetUsePrevious;
         public static bool OffsetUseFixed;
+        public static bool RenameVids;
 
         public static Dictionary<string, TimeSpan> cameraTimeOffsetbase = new Dictionary<string, TimeSpan>();
         static Dictionary<string, TimeSpan> cameraTimeOffset = new Dictionary<string, TimeSpan>();
+
+        FixExif_methods()
+        {
+
+        }
+
 
         #region EXIFupdates
         /// <summary>
@@ -34,13 +44,15 @@ namespace FixExifTimeStamp
         public static string FixEXIFtimestamp(string filename)
                                               
         {
-            bool keepExistingFile = true;
+            bool keepExistingFile = true; 
             FileInfo fi = new FileInfo(filename);
             if (string.IsNullOrEmpty(outPutFolderName))
             {
                 outPutFolderName = fi.Directory.FullName;
                 keepExistingFile = false;
+                OverwriteFile = true;
             }
+            if (fi.Name == "Thumbs.db") return "";  //dont process
 
             ExifLibrary.ImageFile exiffile;
             try
@@ -49,7 +61,43 @@ namespace FixExifTimeStamp
             }
             catch (ExifLibrary.NotValidImageFileException)
             {
-                return "";
+                if(RenameVids)
+                {
+                    //does the name match datetime   yyyyMMdd_HHmmss 
+                    string saveVName;
+                    char[] separators = new char[] { '_', '-' };
+                    string[] dateparts = Path.GetFileNameWithoutExtension(fi.Name).Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                    string stdfmt = string.Format("{0}-{1}", dateparts[0] , dateparts[1]);
+                    DateTime fileNameDate;
+                    bool success = DateTime.TryParseExact(
+                                          stdfmt,
+                                          "yyyyMMdd-HHmmss",
+                                          CultureInfo.CurrentCulture,
+                                          DateTimeStyles.AssumeLocal,
+                                          out fileNameDate);
+                    if (success)
+                    {
+                        //rename the file as date_time
+                        var nextGPStime = fileNameDate.Add(lastCameraOffset);
+                        string newName = nextGPStime.ToString("yyyyMMdd_HHmmss");
+                        newName += fi.Extension;
+                        saveVName = Path.Combine(outPutFolderName, newName);
+                        if (OverwriteFile && saveVName != fi.FullName) keepExistingFile = false; else keepExistingFile = true; ;
+                    }
+                    else
+                    { return ""; }
+ 
+                    
+                    if (!keepExistingFile)
+                    {
+                        fi.MoveTo(saveVName);  //rename file;   //delete the redundant original as saved to new folder or new name
+                    }
+                    else
+                    {  fi.CopyTo(saveVName); }  //keep existing
+
+                    return saveVName;
+                }
+                else return "";
             }
             catch (Exception)
             {
@@ -73,6 +121,7 @@ namespace FixExifTimeStamp
             if (!cameraTimeOffset.ContainsKey(cameramodel))
             {
                 cameraTimeOffset.Add(cameramodel, baseOffset);
+                lastCameraOffset = baseOffset;
             }
             else
             {
@@ -115,22 +164,33 @@ namespace FixExifTimeStamp
                 exiffile.Properties.Set(ExifTag.DateTimeOriginal, localGPStime);
 
             }
+
+
             string saveName;
             if (RenameFile_asDate)
             {
                 //rename the file as date_time
                 string newName = localGPStime.ToString("yyyyMMdd_HHmmss");
-                newName += fi.Extension;
-                saveName = Path.Combine(outPutFolderName, newName);
+                int uniquenum = 0;
+                saveName = Path.Combine(outPutFolderName, newName + fi.Extension);
+                while(File.Exists(saveName) && saveName != fi.FullName)
+                {
+                    uniquenum++;
+                    saveName = Path.Combine(outPutFolderName, newName + string.Format("-{0}",uniquenum) + fi.Extension);
+                }
+
+                if (OverwriteFile && saveName != fi.FullName) keepExistingFile = false; else keepExistingFile = true; ;
             }
             else
             { saveName = Path.Combine(outPutFolderName, filename); }
 
-            exiffile.Save(saveName);  //save exif data back to file
+
             if (!keepExistingFile)
             {
-                fi.Delete();   //delete the redundant original as saved to new folder
+                fi.Delete();   //delete the redundant original as saved to new folder or new name
             }
+
+            exiffile.Save(saveName);  //save exif data back to file
 
             return saveName;
         }
@@ -185,8 +245,10 @@ namespace FixExifTimeStamp
                 DateTime localGPStime = GPSMethods.GetLocalTimefromGPS(gpsLatTag.ToFloat(), gpsLongTag.ToFloat(), UTCDateTime);
                 TimeSpan lastCameraOffset = cameraDateTime.Subtract(localGPStime);
 
-                float timedif = (float)Math.Round(lastCameraOffset.TotalHours,1);
-                CameraTimeOffset thisOffset = new CameraTimeOffset(cameraName, timedif);
+                //float timedif = (float)Math.Round(lastCameraOffset.TotalHours,1);
+                double roundto = 0.05;
+                float timedif = (float)(Math.Ceiling(lastCameraOffset.TotalHours / roundto) * roundto);
+                CameraTimeOffset thisOffset = new CameraTimeOffset(cameraName, -1 * timedif);
                 return thisOffset;
             }
 

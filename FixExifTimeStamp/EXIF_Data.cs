@@ -38,16 +38,19 @@ namespace Exif_Ext
 
         private void LoadbaseProps()
         {
-
+            ExifProperty exifDatetag = exiffile.Properties.Get(ExifTag.DateTime);
+            if (exifDatetag == null) return;
+            CameraDate = (exifDatetag as ExifDateTime).Value;
             CameraName = exiffile.Properties.Get(ExifTag.Model).Value.ToString();
             CameraMake = exiffile.Properties.Get(ExifTag.Make).Value.ToString();
-            ExifProperty exifDatetag = exiffile.Properties.Get(ExifTag.DateTime);
-            CameraDate = (exifDatetag as ExifDateTime).Value;
+            
 
             // GPS latitude is a custom type with three rational values
             // representing degrees/minutes/seconds of the latitude 
             var gpsLatTag = exiffile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLatitude);
+            var gpsLatRef = exiffile.Properties.Get(ExifTag.GPSLatitudeRef);
             var gpsLongTag = exiffile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLongitude);
+            var gpsLongRef = exiffile.Properties.Get(ExifTag.GPSLongitudeRef);
             var gpsDate = exiffile.Properties.Get<ExifDate>(ExifTag.GPSDateStamp);
             var gpsTime = exiffile.Properties.Get<GPSTimeStamp>(ExifTag.GPSTimeStamp);
 
@@ -62,6 +65,9 @@ namespace Exif_Ext
             {
                 GPSLatitude = gpsLatTag.ToFloat();
                 GPSLongitude = gpsLongTag.ToFloat();
+                var xx = gpsLatRef ;
+                if (gpsLatRef.Value.ToString()=="South") { GPSLatitude = GPSLatitude * -1; }
+                if (gpsLongRef.Value.ToString() == "West") { GPSLongitude = GPSLongitude * -1; }
             }
 
             if (gpsDate is null)

@@ -12,7 +12,9 @@ namespace KMZ_PhotoMapper
     {
         public Processor(string Description)
         {
+            PopoutImagesize = 400;
             OutputDescription = Description;
+            
         }
         private System.Threading.Thread T = null;
 
@@ -20,7 +22,7 @@ namespace KMZ_PhotoMapper
         public event ProgressDelegate Progress;
 
         public int thumbSize = 128;
-        public int imageSize = 400;
+
         private readonly string OutputDescription;
         public string Inputfolder { get; set; }
         public string OutputFileName { get; set; }
@@ -31,6 +33,7 @@ namespace KMZ_PhotoMapper
         public bool IncludePath { get; set; }
         public bool  SortByDateTaken { get; set; }
         public bool IncludeDateonpopout { get; set; }
+        public int PopoutImagesize { get; internal set; }
 
         private SortedList<string, PhotoDetail> inputPhotos;
         private string imageFolder ;
@@ -40,6 +43,14 @@ namespace KMZ_PhotoMapper
         bool isOk = true;
         public bool Begin()
         {
+            //ensure KMZ saves to useful location
+            FileInfo fi = new FileInfo(OutputFileName);
+            if(fi.DirectoryName.Length==0)
+            {
+                OutputFileName = Path.Combine(Inputfolder, OutputFileName);
+            }
+            if (fi.Extension.Length == 0) OutputFileName += ".kmz";
+
             if (T == null)
             {
                 T = new System.Threading.Thread(new System.Threading.ThreadStart(Worker));
@@ -387,7 +398,7 @@ namespace KMZ_PhotoMapper
 
             //now make the popout images
             {
-                var imgresized = ImageMethods.ResizeImageFile(thisPhotoFile, imageSize, imageSize);
+                var imgresized = ImageMethods.ResizeImageFile(thisPhotoFile, PopoutImagesize, PopoutImagesize);
                 ImageMethods.SaveOutputImage(thisPhoto.ImageFilename, imgresized, 80L);
 
             }

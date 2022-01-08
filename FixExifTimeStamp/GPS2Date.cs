@@ -7,9 +7,6 @@ using System.Text;
 using System.Windows.Forms;
 
 
-// This is the code for your desktop app.
-// Press Ctrl+F5 (or go to Debug > Start Without Debugging) to run your app.
-
 namespace FixExifTimeStamp
 {
     public partial class GPS2Date : Form
@@ -45,10 +42,13 @@ namespace FixExifTimeStamp
                 outputFolderPath = "";
             }
 
+            FixExifTimeStamp.FixExif_methods.OverwriteFile = rbOutpOverw.Checked;
             FixExifTimeStamp.FixExif_methods.outPutFolderName = outputFolderPath;
             FixExifTimeStamp.FixExif_methods.RenameFile_asDate = chkDateinDescription.Checked;
             FixExifTimeStamp.FixExif_methods.OffsetUsePrevious = rbUseLastOffset.Checked;
             FixExifTimeStamp.FixExif_methods.OffsetUseFixed = rbConstantOffset.Checked;
+            FixExifTimeStamp.FixExif_methods.RenameVids = chkboxVidDatetime.Checked;
+
             //FixExifTimeStamp.FixExif_methods.OffsetFixed = Convert.ToSingle(tbTimeOffset.Text);
             Console.WriteLine(DateTime.Now.Ticks);
 
@@ -63,6 +63,7 @@ namespace FixExifTimeStamp
             }
 
             var fileList = di.GetFiles();
+            Array.Sort(fileList, (f1, f2) => f1.Name.CompareTo(f2.Name));
             int totalfiles = fileList.Length;
             int countf = 0;
             foreach (var fl in fileList)
@@ -110,6 +111,8 @@ namespace FixExifTimeStamp
         private void butPreview_Click(object sender, EventArgs e)
         {
             ///run through all the items and get stats
+            if (tbPhotoFolder.Text.Length == 0) return;
+
             DirectoryInfo di = new DirectoryInfo(tbPhotoFolder.Text);
             toolStripStatusLabel1.Text = "Previewing GPS data...";
             toolStripProgressBar1.Value = 1; statusStrip1.Refresh();
@@ -186,7 +189,7 @@ namespace FixExifTimeStamp
                             break;
                         default:
                             //is a error flag time offset though should be less than 10 if camera has date set
-                            sb.AppendLine(string.Format("{2,-20} {0,4:#0.0} = {1,3:##0}", item.Key, item.Value, camName));
+                            sb.AppendLine(string.Format("{2,-20} {0,4:#0.00} = {1,3:##0}", item.Key, item.Value, camName));
                             break;
                     }
 

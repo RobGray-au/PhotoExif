@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.1433
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FixExifTimeStamp", "FixExifTimeStamp\FixExifTimeStamp.csproj", "{F6DD6514-0657-4330-B026-6230E55CC6FB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5276A652-18F4-4ED5-9EE5-9464A03E8C45} = {5276A652-18F4-4ED5-9EE5-9464A03E8C45}
+		{1EF34D8A-44D9-44B2-BB7E-706B686A261E} = {1EF34D8A-44D9-44B2-BB7E-706B686A261E}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KMZ-PhotoMapper", "KMZ-PhotoMapper\KMZ-PhotoMapper.csproj", "{5276A652-18F4-4ED5-9EE5-9464A03E8C45}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -15,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXIFLib_472", "EXIFLib_472\EXIFLib_472.csproj", "{1EF34D8A-44D9-44B2-BB7E-706B686A261E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EXIFLib_472", "..\ClassLib\EXIFLib_472\EXIFLib_472.csproj", "{1EF34D8A-44D9-44B2-BB7E-706B686A261E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

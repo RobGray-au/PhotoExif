@@ -9,15 +9,19 @@ namespace KMZ_PhotoMapper
         public MainForm()
         {
             InitializeComponent();
+            imgSizeDDL.Text = "400";
         }
 
         private void butProcess_Click(object sender, EventArgs e)
         {
+            var tmp = tbDescription.Text;
+
             Processor go = new Processor(tbDescription.Text)
             {
                 IncludeThumbnails = chkIncThumbnails.Checked,
                 Inputfolder = tbPhotoFolder.Text,
                 OutputFileName = tbOutputFileName.Text,
+                PopoutImagesize = Convert.ToInt16(imgSizeDDL.Text),
                 SortByDateTaken = chkOrderbyDate.Checked,
                 PhotoFilename_asDescription = chkPhotoFileName.Checked,
                 UseGPSDate = chkUseGPSDate.Checked,

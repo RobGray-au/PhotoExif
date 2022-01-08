@@ -29,7 +29,10 @@ namespace FixExifTimeStamp
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GPS2Date));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.title = new System.Windows.Forms.Label();
             this.butExit = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
@@ -44,8 +47,6 @@ namespace FixExifTimeStamp
             this.rbOutpOverw = new System.Windows.Forms.RadioButton();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dgvCameraOffset = new System.Windows.Forms.DataGridView();
-            this.Camera = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Hours = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label3 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.rbConstantOffset = new System.Windows.Forms.RadioButton();
@@ -54,6 +55,9 @@ namespace FixExifTimeStamp
             this.butProcess = new System.Windows.Forms.Button();
             this.butGetPhotoFolder = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.Camera = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Hours = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.chkboxVidDatetime = new System.Windows.Forms.CheckBox();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -154,6 +158,7 @@ namespace FixExifTimeStamp
             this.chkDateinDescription.AutoSize = true;
             this.chkDateinDescription.Checked = true;
             this.chkDateinDescription.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkDateinDescription.ForeColor = System.Drawing.Color.Tomato;
             this.chkDateinDescription.Location = new System.Drawing.Point(376, 19);
             this.chkDateinDescription.Name = "chkDateinDescription";
             this.chkDateinDescription.Size = new System.Drawing.Size(151, 17);
@@ -173,6 +178,7 @@ namespace FixExifTimeStamp
             // 
             this.rbSubfolder.AutoSize = true;
             this.rbSubfolder.Checked = true;
+            this.rbSubfolder.ForeColor = System.Drawing.Color.Tomato;
             this.rbSubfolder.Location = new System.Drawing.Point(82, 19);
             this.rbSubfolder.Name = "rbSubfolder";
             this.rbSubfolder.Size = new System.Drawing.Size(107, 17);
@@ -185,6 +191,7 @@ namespace FixExifTimeStamp
             // rbOutpOverw
             // 
             this.rbOutpOverw.AutoSize = true;
+            this.rbOutpOverw.ForeColor = System.Drawing.Color.Tomato;
             this.rbOutpOverw.Location = new System.Drawing.Point(6, 19);
             this.rbOutpOverw.Name = "rbOutpOverw";
             this.rbOutpOverw.Size = new System.Drawing.Size(70, 17);
@@ -198,6 +205,7 @@ namespace FixExifTimeStamp
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.BackColor = System.Drawing.Color.Transparent;
+            this.groupBox2.Controls.Add(this.chkboxVidDatetime);
             this.groupBox2.Controls.Add(this.dgvCameraOffset);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Controls.Add(this.label1);
@@ -215,6 +223,9 @@ namespace FixExifTimeStamp
             // 
             this.dgvCameraOffset.AllowUserToAddRows = false;
             this.dgvCameraOffset.AllowUserToDeleteRows = false;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.dgvCameraOffset.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvCameraOffset.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -224,6 +235,15 @@ namespace FixExifTimeStamp
             this.dgvCameraOffset.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Camera,
             this.Hours});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvCameraOffset.DefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvCameraOffset.GridColor = System.Drawing.SystemColors.ActiveCaption;
             this.dgvCameraOffset.Location = new System.Drawing.Point(246, 32);
             this.dgvCameraOffset.Name = "dgvCameraOffset";
             this.dgvCameraOffset.RowHeadersVisible = false;
@@ -232,23 +252,6 @@ namespace FixExifTimeStamp
             this.toolTip1.SetToolTip(this.dgvCameraOffset, "Each camera has it\'s own offset applied.\r\nrefer to the outcome of the Preview.  \r" +
         "\nNote the offset correction is the opposite of the value returned by the Preview" +
         ".");
-            // 
-            // Camera
-            // 
-            this.Camera.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Camera.DividerWidth = 4;
-            this.Camera.HeaderText = "Camera";
-            this.Camera.MinimumWidth = 50;
-            this.Camera.Name = "Camera";
-            this.Camera.ReadOnly = true;
-            this.Camera.Width = 72;
-            // 
-            // Hours
-            // 
-            this.Hours.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.Hours.HeaderText = "Hours";
-            this.Hours.MinimumWidth = 100;
-            this.Hours.Name = "Hours";
             // 
             // label3
             // 
@@ -263,7 +266,8 @@ namespace FixExifTimeStamp
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(329, 16);
+            this.label1.ForeColor = System.Drawing.Color.Tomato;
+            this.label1.Location = new System.Drawing.Point(288, 16);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(157, 13);
             this.label1.TabIndex = 3;
@@ -272,6 +276,7 @@ namespace FixExifTimeStamp
             // rbConstantOffset
             // 
             this.rbConstantOffset.AutoSize = true;
+            this.rbConstantOffset.ForeColor = System.Drawing.Color.Tomato;
             this.rbConstantOffset.Location = new System.Drawing.Point(15, 42);
             this.rbConstantOffset.Name = "rbConstantOffset";
             this.rbConstantOffset.Size = new System.Drawing.Size(124, 17);
@@ -283,6 +288,7 @@ namespace FixExifTimeStamp
             // 
             this.rbUseLastOffset.AutoSize = true;
             this.rbUseLastOffset.Checked = true;
+            this.rbUseLastOffset.ForeColor = System.Drawing.Color.Tomato;
             this.rbUseLastOffset.Location = new System.Drawing.Point(15, 18);
             this.rbUseLastOffset.Name = "rbUseLastOffset";
             this.rbUseLastOffset.Size = new System.Drawing.Size(131, 17);
@@ -333,6 +339,38 @@ namespace FixExifTimeStamp
             this.butGetPhotoFolder.TabIndex = 16;
             this.butGetPhotoFolder.UseVisualStyleBackColor = true;
             this.butGetPhotoFolder.Click += new System.EventHandler(this.butGetPhotoFolder_Click);
+            // 
+            // Camera
+            // 
+            this.Camera.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.Camera.DividerWidth = 4;
+            this.Camera.HeaderText = "Camera";
+            this.Camera.MinimumWidth = 50;
+            this.Camera.Name = "Camera";
+            this.Camera.ReadOnly = true;
+            this.Camera.Width = 72;
+            // 
+            // Hours
+            // 
+            this.Hours.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.Hours.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Hours.HeaderText = "Hours";
+            this.Hours.MinimumWidth = 100;
+            this.Hours.Name = "Hours";
+            // 
+            // chkboxVidDatetime
+            // 
+            this.chkboxVidDatetime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkboxVidDatetime.Checked = true;
+            this.chkboxVidDatetime.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkboxVidDatetime.ForeColor = System.Drawing.Color.Tomato;
+            this.chkboxVidDatetime.Location = new System.Drawing.Point(15, 95);
+            this.chkboxVidDatetime.Name = "chkboxVidDatetime";
+            this.chkboxVidDatetime.Size = new System.Drawing.Size(198, 50);
+            this.chkboxVidDatetime.TabIndex = 19;
+            this.chkboxVidDatetime.Text = "rename VID file with last offset if  name matches datetime";
+            this.chkboxVidDatetime.UseVisualStyleBackColor = true;
             // 
             // GPS2Date
             // 
@@ -392,6 +430,7 @@ namespace FixExifTimeStamp
         private System.Windows.Forms.DataGridView dgvCameraOffset;
         private System.Windows.Forms.DataGridViewTextBoxColumn Camera;
         private System.Windows.Forms.DataGridViewTextBoxColumn Hours;
+        private System.Windows.Forms.CheckBox chkboxVidDatetime;
     }
 }
 
