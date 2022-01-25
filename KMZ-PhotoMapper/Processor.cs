@@ -116,7 +116,6 @@ namespace KMZ_PhotoMapper
             return true;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         private bool CreateKML(string outputFilename)
         {
             RaiseProgress("Creating KML..", 80);
@@ -282,7 +281,7 @@ namespace KMZ_PhotoMapper
         }
 
         #endregion
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
+
         private void Makelist(DirectoryInfo di)
         {
 

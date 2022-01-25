@@ -40,7 +40,6 @@ namespace FixExifTimeStamp
         /// <returns></returns>
         /// 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "<Pending>")]
         public static string FixEXIFtimestamp(string filename)
                                               
         {
@@ -68,13 +67,12 @@ namespace FixExifTimeStamp
                     char[] separators = new char[] { '_', '-' };
                     string[] dateparts = Path.GetFileNameWithoutExtension(fi.Name).Split(separators, StringSplitOptions.RemoveEmptyEntries);
                     string stdfmt = string.Format("{0}-{1}", dateparts[0] , dateparts[1]);
-                    DateTime fileNameDate;
                     bool success = DateTime.TryParseExact(
                                           stdfmt,
                                           "yyyyMMdd-HHmmss",
                                           CultureInfo.CurrentCulture,
                                           DateTimeStyles.AssumeLocal,
-                                          out fileNameDate);
+                                          out DateTime fileNameDate);
                     if (success)
                     {
                         //rename the file as date_time
@@ -82,7 +80,7 @@ namespace FixExifTimeStamp
                         string newName = nextGPStime.ToString("yyyyMMdd_HHmmss");
                         newName += fi.Extension;
                         saveVName = Path.Combine(outPutFolderName, newName);
-                        if (OverwriteFile && saveVName != fi.FullName) keepExistingFile = false; else keepExistingFile = true; ;
+                        if (OverwriteFile && saveVName == fi.FullName) keepExistingFile = false; else keepExistingFile = true; ;
                     }
                     else
                     { return ""; }
@@ -128,7 +126,8 @@ namespace FixExifTimeStamp
                 lastCameraOffset = cameraTimeOffset[cameramodel];
             }
 
-            ExifProperty exifDatetag = exiffile.Properties.Get(ExifTag.DateTime);
+            ExifProperty exifDatetag = exiffile.Properties.Get(ExifTag.DateTimeOriginal);
+            if(exifDatetag == null) exifDatetag = exiffile.Properties.Get(ExifTag.DateTime) ;
             DateTime cameraDateTime = (exifDatetag as ExifDateTime).Value;
 
             DateTime localGPStime;
@@ -147,8 +146,15 @@ namespace FixExifTimeStamp
             }
             else
             {
+                var gpsLatTagR = exiffile.Properties.Get<ExifEnumProperty<GPSLatitudeRef>>(ExifTag.GPSLatitudeRef);
+                var gpsLongTagR = exiffile.Properties.Get<ExifEnumProperty<GPSLongitudeRef>>(ExifTag.GPSLongitudeRef);
+                float gpsLat = gpsLatTag.ToFloat();
+                if (gpsLat > 0 && gpsLatTagR.Value == GPSLatitudeRef.South) gpsLat *= -1;  //North = 1, south = -1
+                float gpsLong = gpsLongTag.ToFloat();
+                if (gpsLong > 0 && gpsLongTagR.Value == GPSLongitudeRef.West) gpsLong *= -1;  //east=1, west=-1
                 DateTime UTCDateTime = gpsDate.Value + new TimeSpan((int)gpsTime.Hour, (int)gpsTime.Minute, (int)gpsTime.Second);
-                localGPStime = GPSMethods.GetLocalTimefromGPS(gpsLatTag.ToFloat(), gpsLongTag.ToFloat(), UTCDateTime);
+                localGPStime = GPSMethods.GetLocalTimefromGPS(gpsLat, gpsLong, UTCDateTime);
+
 
                 lastCameraOffset = localGPStime.Subtract(cameraDateTime);  //save for next time
                 if (!cameraTimeOffset.ContainsKey(cameramodel))
@@ -200,58 +206,39 @@ namespace FixExifTimeStamp
         /// assumes no camera date set 10years in future, but may be 10years behind if reset to default
         /// </summary>
         /// <param name="filename"></param>
-        /// <returns>+12 -> -12 valid, -999 not an image, -99 no GPS time</returns>
+        /// <returns>
+        ///     float to 0.05 hr  +12 -> -12 valid, 99999 not an image, 99901 no GPS time
+        ///     camera name
+        /// </returns>
+        
         public static CameraTimeOffset GetEXIFtime_diff(string filename)
         {
-            ExifLibrary.ImageFile exiffile;
-            
-            try
-            {
-                exiffile = ExifLibrary.ImageFile.FromFile(filename);
-            }
-#pragma warning disable CA1031 // Do not catch general exception types
-            catch (ExifLibrary.NotValidImageFileException)
-            {
-                CameraTimeOffset thisOffset = new CameraTimeOffset("Not Image", 99999);
-                return thisOffset;
-            }
+            Exif_Ext.EXIF_Data exif_Data = new Exif_Ext.EXIF_Data(filename);
 
-            catch (Exception)
+            switch (exif_Data.Status)
             {
-                CameraTimeOffset thisOffset = new CameraTimeOffset("Exception", 99999);
-                return thisOffset;
+                case "ok":
+                    if (exif_Data.CameraName is null) exif_Data.CameraName = "---";
+                    if(exif_Data.GPSUTCDate == DateTime.MinValue) return new CameraTimeOffset(exif_Data.CameraName, 99901);
+
+                    DateTime localGPStime = GPSMethods.GetLocalTimefromGPS(exif_Data.GPSLatitude,exif_Data.GPSLongitude, exif_Data.GPSUTCDate);
+
+                    TimeSpan lastCameraOffset = exif_Data.CameraDate.Subtract(localGPStime);
+
+                    //float timedif = (float)Math.Round(lastCameraOffset.TotalHours,1);
+                    double roundto = 0.05;
+                    float timedif = (float)(Math.Ceiling(lastCameraOffset.TotalHours / roundto) * roundto);
+                    CameraTimeOffset thisOffset = new CameraTimeOffset(exif_Data.CameraName, -1 * timedif);
+                    return thisOffset;
+
+                case "Not Image":
+                    return new CameraTimeOffset("Not Image", 99999);
+
+                default:
+                    //error occurred
+                    return new CameraTimeOffset("Exception", 99999);
+
             }
-#pragma warning restore CA1031 // Do not catch general exception types
-            string cameraName = exiffile.Properties.Get(ExifTag.Model).Value.ToString();
-
-            // GPS latitude is a custom type with three rational values
-            // representing degrees/minutes/seconds of the latitude 
-            var gpsLatTag = exiffile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLatitude);
-            var gpsLongTag = exiffile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLongitude);
-            var gpsDate = exiffile.Properties.Get<ExifDate>(ExifTag.GPSDateStamp);
-            var gpsTime = exiffile.Properties.Get<GPSTimeStamp>(ExifTag.GPSTimeStamp);
-            ExifProperty exifDatetag = exiffile.Properties.Get(ExifTag.DateTime);
-            DateTime cameraDateTime = (exifDatetag as ExifDateTime).Value;
-
-            if (gpsDate is null)
-            {
-                CameraTimeOffset thisOffset = new CameraTimeOffset(cameraName, 99901);
-                return thisOffset;
-                  //assumed no camera set 10years in advance
-            }
-            else
-            {
-                DateTime UTCDateTime = gpsDate.Value + new TimeSpan((int)gpsTime.Hour, (int)gpsTime.Minute, (int)gpsTime.Second);
-                DateTime localGPStime = GPSMethods.GetLocalTimefromGPS(gpsLatTag.ToFloat(), gpsLongTag.ToFloat(), UTCDateTime);
-                TimeSpan lastCameraOffset = cameraDateTime.Subtract(localGPStime);
-
-                //float timedif = (float)Math.Round(lastCameraOffset.TotalHours,1);
-                double roundto = 0.05;
-                float timedif = (float)(Math.Ceiling(lastCameraOffset.TotalHours / roundto) * roundto);
-                CameraTimeOffset thisOffset = new CameraTimeOffset(cameraName, -1 * timedif);
-                return thisOffset;
-            }
-
         }
 
         #endregion

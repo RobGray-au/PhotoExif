@@ -78,7 +78,7 @@ namespace FixExifTimeStamp
             this.title.TabIndex = 3;
             this.title.Text = "Update Photo EXIF date using GPS info where available";
             this.title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.title.Click += new System.EventHandler(this.helloWorldLabel_Click);
+            
             // 
             // butExit
             // 
@@ -89,7 +89,7 @@ namespace FixExifTimeStamp
             this.butExit.TabIndex = 20;
             this.butExit.Text = "Exit";
             this.butExit.UseVisualStyleBackColor = true;
-            this.butExit.Click += new System.EventHandler(this.butExit_Click);
+            this.butExit.Click += new System.EventHandler(this.ButExit_Click);
             // 
             // label2
             // 
@@ -110,7 +110,7 @@ namespace FixExifTimeStamp
             this.tbPhotoFolder.Name = "tbPhotoFolder";
             this.tbPhotoFolder.Size = new System.Drawing.Size(501, 20);
             this.tbPhotoFolder.TabIndex = 14;
-            this.tbPhotoFolder.TextChanged += new System.EventHandler(this.tbPhotoFolder_TextChanged);
+            this.tbPhotoFolder.TextChanged += new System.EventHandler(this.TBPhotoFolder_TextChanged);
             // 
             // toolStripStatusLabel1
             // 
@@ -186,7 +186,7 @@ namespace FixExifTimeStamp
             this.rbSubfolder.TabStop = true;
             this.rbSubfolder.Text = "Copy to subfolder";
             this.rbSubfolder.UseVisualStyleBackColor = true;
-            this.rbSubfolder.CheckedChanged += new System.EventHandler(this.rbSubfolder_CheckedChanged);
+            this.rbSubfolder.CheckedChanged += new System.EventHandler(this.RBSubfolder_CheckedChanged);
             // 
             // rbOutpOverw
             // 
@@ -311,7 +311,7 @@ namespace FixExifTimeStamp
             this.toolTip1.SetToolTip(this.butPreview, "Preview what offsets are contained within the valid EXIF tags. Use to set the Def" +
         "ault or constant offset correctly.");
             this.butPreview.UseVisualStyleBackColor = false;
-            this.butPreview.Click += new System.EventHandler(this.butPreview_Click);
+            this.butPreview.Click += new System.EventHandler(this.ButPreview_Click);
             // 
             // butProcess
             // 
@@ -327,7 +327,7 @@ namespace FixExifTimeStamp
             this.butProcess.Text = "&Process";
             this.toolTip1.SetToolTip(this.butProcess, "Update the EXIF tags to suit adjusted time & date of photo.");
             this.butProcess.UseVisualStyleBackColor = false;
-            this.butProcess.Click += new System.EventHandler(this.butProcess_Click);
+            this.butProcess.Click += new System.EventHandler(this.ButProcess_Click);
             // 
             // butGetPhotoFolder
             // 
@@ -338,7 +338,7 @@ namespace FixExifTimeStamp
             this.butGetPhotoFolder.Size = new System.Drawing.Size(29, 26);
             this.butGetPhotoFolder.TabIndex = 16;
             this.butGetPhotoFolder.UseVisualStyleBackColor = true;
-            this.butGetPhotoFolder.Click += new System.EventHandler(this.butGetPhotoFolder_Click);
+            this.butGetPhotoFolder.Click += new System.EventHandler(this.ButGetPhotoFolder_Click);
             // 
             // Camera
             // 

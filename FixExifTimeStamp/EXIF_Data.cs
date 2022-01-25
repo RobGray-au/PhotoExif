@@ -6,8 +6,8 @@ namespace Exif_Ext
 {
     class EXIF_Data
     {
-        public ExifLibrary.ImageFile exiffile { get; private set; }
-        public string status { get; private set; }
+        public ExifLibrary.ImageFile ExifFile { get; private set; }
+        public string Status { get; private set; }
         public string CameraName { get; set; }
         public string CameraMake { get; private set; }
         public DateTime CameraDate { get; private set; }
@@ -19,40 +19,45 @@ namespace Exif_Ext
         {
             try
             {
-                exiffile = ExifLibrary.ImageFile.FromFile(filename);
+                ExifFile = ExifLibrary.ImageFile.FromFile(filename);
+
                 LoadbaseProps();
-                status = "ok";
+                Status = "ok";
             }
-#pragma warning disable CA1031 // Do not catch general exception types
+
             catch (ExifLibrary.NotValidImageFileException)
             {
-                status = "Not Image";
+                Status = "Not Image";
             }
 
             catch (Exception ex)
             {
-                status = "!EX"+ ex.ToString(); ;
+                Status = "!EX"+ ex.ToString(); ;
             }
-#pragma warning restore CA1031 // Do not catch general exception types
+
         }
 
         private void LoadbaseProps()
         {
-            ExifProperty exifDatetag = exiffile.Properties.Get(ExifTag.DateTime);
+            ExifProperty exifDatetag = ExifFile.Properties.Get(ExifTag.DateTimeOriginal);
+            if (exifDatetag == null) exifDatetag = ExifFile.Properties.Get(ExifTag.DateTime);
             if (exifDatetag == null) return;
+
             CameraDate = (exifDatetag as ExifDateTime).Value;
-            CameraName = exiffile.Properties.Get(ExifTag.Model).Value.ToString();
-            CameraMake = exiffile.Properties.Get(ExifTag.Make).Value.ToString();
+            CameraName = ExifFile.Properties.Get(ExifTag.Model).Value.ToString();
+            CameraMake = ExifFile.Properties.Get(ExifTag.Make).Value.ToString();
             
 
             // GPS latitude is a custom type with three rational values
             // representing degrees/minutes/seconds of the latitude 
-            var gpsLatTag = exiffile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLatitude);
-            var gpsLatRef = exiffile.Properties.Get(ExifTag.GPSLatitudeRef);
-            var gpsLongTag = exiffile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLongitude);
-            var gpsLongRef = exiffile.Properties.Get(ExifTag.GPSLongitudeRef);
-            var gpsDate = exiffile.Properties.Get<ExifDate>(ExifTag.GPSDateStamp);
-            var gpsTime = exiffile.Properties.Get<GPSTimeStamp>(ExifTag.GPSTimeStamp);
+            var gpsLatTag = ExifFile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLatitude);
+            var gpsLongTag = ExifFile.Properties.Get<GPSLatitudeLongitude>(ExifTag.GPSLongitude);
+
+            var gpsLatRef = ExifFile.Properties.Get<ExifEnumProperty<GPSLatitudeRef>>(ExifTag.GPSLatitudeRef);
+            var gpsLongRef = ExifFile.Properties.Get<ExifEnumProperty<GPSLongitudeRef>>(ExifTag.GPSLongitudeRef);
+
+            var gpsDate = ExifFile.Properties.Get<ExifDate>(ExifTag.GPSDateStamp);
+            var gpsTime = ExifFile.Properties.Get<GPSTimeStamp>(ExifTag.GPSTimeStamp);
 
             if (gpsLatTag is null)
             {
@@ -65,9 +70,9 @@ namespace Exif_Ext
             {
                 GPSLatitude = gpsLatTag.ToFloat();
                 GPSLongitude = gpsLongTag.ToFloat();
-                var xx = gpsLatRef ;
-                if (gpsLatRef.Value.ToString()=="South") { GPSLatitude = GPSLatitude * -1; }
-                if (gpsLongRef.Value.ToString() == "West") { GPSLongitude = GPSLongitude * -1; }
+
+                if (gpsLatRef.Value == GPSLatitudeRef.South) { GPSLatitude *= -1; }
+                if (gpsLongRef.Value == GPSLongitudeRef.West) { GPSLongitude *= -1; }
             }
 
             if (gpsDate is null)

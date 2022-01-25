@@ -16,12 +16,8 @@ namespace FixExifTimeStamp
             InitializeComponent();
         }
 
-        private void helloWorldLabel_Click(object sender, EventArgs e)
-        {
 
-        }
-
-        private void butProcess_Click(object sender, EventArgs e)
+        private void ButProcess_Click(object sender, EventArgs e)
         {
             toolStripStatusLabel1.Text = "Processing folder..";
             toolStripProgressBar1.Value = 1; statusStrip1.Refresh();
@@ -64,7 +60,7 @@ namespace FixExifTimeStamp
 
             var fileList = di.GetFiles();
             Array.Sort(fileList, (f1, f2) => f1.Name.CompareTo(f2.Name));
-            int totalfiles = fileList.Length;
+            int totalfiles = fileList.Length; if (totalfiles < 10) totalfiles = 10;
             int countf = 0;
             foreach (var fl in fileList)
             {
@@ -77,12 +73,12 @@ namespace FixExifTimeStamp
             toolStripStatusLabel1.Text = "..Done"; toolStripProgressBar1.Value = 0; statusStrip1.Refresh();
         }
 
-        private void butExit_Click(object sender, EventArgs e)
+        private void ButExit_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void rbSubfolder_CheckedChanged(object sender, EventArgs e)
+        private void RBSubfolder_CheckedChanged(object sender, EventArgs e)
         {
             if (rbSubfolder.Checked)
             {
@@ -94,7 +90,7 @@ namespace FixExifTimeStamp
             }
         }
 
-        private void butGetPhotoFolder_Click(object sender, EventArgs e)
+        private void ButGetPhotoFolder_Click(object sender, EventArgs e)
         {
             FolderBrowserDialog fbd = new FolderBrowserDialog
             {
@@ -108,7 +104,7 @@ namespace FixExifTimeStamp
             }
         }
 
-        private void butPreview_Click(object sender, EventArgs e)
+        private void ButPreview_Click(object sender, EventArgs e)
         {
             ///run through all the items and get stats
             if (tbPhotoFolder.Text.Length == 0) return;
@@ -133,7 +129,7 @@ namespace FixExifTimeStamp
 
             Dictionary<float, int> imagestats = new Dictionary<float, int>();
             var fileList = di.GetFiles();
-            int totalfiles = fileList.Length;
+            int totalfiles = fileList.Length; if (totalfiles < 10) totalfiles = 11;
             string cameraModel = "";
             float thisOffset =0;
             int countf = 0; 
@@ -203,7 +199,7 @@ namespace FixExifTimeStamp
             butProcess.Enabled = true;
         }
 
-        private void tbPhotoFolder_TextChanged(object sender, EventArgs e)
+        private void TBPhotoFolder_TextChanged(object sender, EventArgs e)
         {
             butProcess.Enabled = false;
         }
